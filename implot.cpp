@@ -3899,8 +3899,8 @@ bool DragPoint(int n_id, double* x, double* y, const ImVec4& col, float radius, 
     IM_ASSERT_USER_ERROR(GImPlot->CurrentPlot != nullptr, "DragPoint() needs to be called between BeginPlot() and EndPlot()!");
     SetupLock();
 
-    if (!ImHasFlag(flags,ImPlotDragToolFlags_NoFit) && FitThisFrame()) {
-        FitPoint(ImPlotPoint(*x,*y));
+    if (!ImHasFlag(flags, ImPlotDragToolFlags_NoFit) && FitThisFrame()) {
+        FitPoint(ImPlotPoint(*x, *y));
     }
 
     const bool input = !ImHasFlag(flags, ImPlotDragToolFlags_NoInputs);
@@ -3910,23 +3910,23 @@ bool DragPoint(int n_id, double* x, double* y, const ImVec4& col, float radius, 
     const ImVec4 color = IsColorAuto(col) ? ImGui::GetStyleColorVec4(ImGuiCol_Text) : col;
     const ImU32 col32 = ImGui::ColorConvertFloat4ToU32(color);
 
-    ImVec2 pos = PlotToPixels(*x,*y,IMPLOT_AUTO,IMPLOT_AUTO);
+    ImVec2 pos = PlotToPixels(*x, *y, IMPLOT_AUTO, IMPLOT_AUTO);
     const ImGuiID id = ImGui::GetCurrentWindow()->GetID(n_id);
-    ImRect rect(pos.x-grab_half_size,pos.y-grab_half_size,pos.x+grab_half_size,pos.y+grab_half_size);
+    ImRect rect(pos.x - grab_half_size, pos.y - grab_half_size, pos.x + grab_half_size, pos.y + grab_half_size);
     bool hovered = false, held = false;
 
     ImGui::KeepAliveID(id);
     if (input) {
-        bool clicked = ImGui::ButtonBehavior(rect,id,&hovered,&held);
+        bool clicked = ImGui::ButtonBehavior(rect, id, &hovered, &held);
         if (out_clicked) *out_clicked = clicked;
         if (out_hovered) *out_hovered = hovered;
-        if (out_held)    *out_held    = held;
+        if (out_held)    *out_held = held;
     }
 
     bool modified = false;
     if (held && ImGui::IsMouseDragging(0)) {
-        *x = ImPlot::GetPlotMousePos(IMPLOT_AUTO,IMPLOT_AUTO).x;
-        *y = ImPlot::GetPlotMousePos(IMPLOT_AUTO,IMPLOT_AUTO).y;
+        *x = ImPlot::GetPlotMousePos(IMPLOT_AUTO, IMPLOT_AUTO).x;
+        *y = ImPlot::GetPlotMousePos(IMPLOT_AUTO, IMPLOT_AUTO).y;
         modified = true;
     }
 
@@ -3935,8 +3935,24 @@ bool DragPoint(int n_id, double* x, double* y, const ImVec4& col, float radius, 
     if ((hovered || held) && show_curs)
         ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
     if (modified && no_delay)
-        pos = PlotToPixels(*x,*y,IMPLOT_AUTO,IMPLOT_AUTO);
-    DrawList.AddCircleFilled(pos, radius, col32);
+        pos = PlotToPixels(*x, *y, IMPLOT_AUTO, IMPLOT_AUTO);
+
+    const bool hollow = !ImHasFlag(flags, ImPlotDragToolFlags_Hollow);
+    if (hollow)
+        DrawList.AddCircleFilled(pos, radius, col32);
+    else
+        DrawList.AddCircle(pos, radius, col32);
+
+    const bool numbered = !ImHasFlag(flags, ImPlotDragToolFlags_Numbered);
+    if (numbered)
+    {
+        char text[10];
+        sprintf(text, "%d", n_id);
+
+        auto size = ImGui::CalcTextSize(text);
+        DrawList.AddText(pos - ImVec2{ size.x / 2, size.y / 2 }, col32, text);
+    }
+
     PopPlotClipRect();
 
     ImGui::PopID();
@@ -3985,7 +4001,23 @@ bool DragPoint(int n_id, float* x, float* y, const ImVec4& col, float radius, Im
         ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
     if (modified && no_delay)
         pos = PlotToPixels(*x, *y, IMPLOT_AUTO, IMPLOT_AUTO);
-    DrawList.AddCircleFilled(pos, radius, col32);
+
+    const bool hollow = !ImHasFlag(flags, ImPlotDragToolFlags_Hollow);
+    if (hollow)
+        DrawList.AddCircleFilled(pos, radius, col32);
+    else
+        DrawList.AddCircle(pos, radius, col32);
+
+    const bool numbered = !ImHasFlag(flags, ImPlotDragToolFlags_Numbered);
+    if (numbered)
+    {
+        char text[10];
+        sprintf(text, "%d", n_id);
+
+        auto size = ImGui::CalcTextSize(text);
+        DrawList.AddText(pos - ImVec2{ size.x / 2, size.y / 2 }, col32, text);
+    }
+
     PopPlotClipRect();
 
     ImGui::PopID();
