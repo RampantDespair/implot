@@ -3937,13 +3937,13 @@ bool DragPoint(int n_id, double* x, double* y, const ImVec4& col, float radius, 
     if (modified && no_delay)
         pos = PlotToPixels(*x, *y, IMPLOT_AUTO, IMPLOT_AUTO);
 
-    const bool hollow = !ImHasFlag(flags, ImPlotDragToolFlags_Hollow);
+    const bool hollow = ImHasFlag(flags, ImPlotDragToolFlags_Hollow);
     if (hollow)
-        DrawList.AddCircleFilled(pos, radius, col32);
-    else
         DrawList.AddCircle(pos, radius, col32);
+    else
+        DrawList.AddCircleFilled(pos, radius, col32);
 
-    const bool numbered = !ImHasFlag(flags, ImPlotDragToolFlags_Numbered);
+    const bool numbered = ImHasFlag(flags, ImPlotDragToolFlags_Numbered);
     if (numbered)
     {
         char text[10];
@@ -4002,13 +4002,13 @@ bool DragPoint(int n_id, float* x, float* y, const ImVec4& col, float radius, Im
     if (modified && no_delay)
         pos = PlotToPixels(*x, *y, IMPLOT_AUTO, IMPLOT_AUTO);
 
-    const bool hollow = !ImHasFlag(flags, ImPlotDragToolFlags_Hollow);
+    const bool hollow = ImHasFlag(flags, ImPlotDragToolFlags_Hollow);
     if (hollow)
-        DrawList.AddCircleFilled(pos, radius, col32);
-    else
         DrawList.AddCircle(pos, radius, col32);
+    else
+        DrawList.AddCircleFilled(pos, radius, col32);
 
-    const bool numbered = !ImHasFlag(flags, ImPlotDragToolFlags_Numbered);
+    const bool numbered = ImHasFlag(flags, ImPlotDragToolFlags_Numbered);
     if (numbered)
     {
         char text[10];
